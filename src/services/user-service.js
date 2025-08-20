@@ -52,6 +52,17 @@ class UserService {
       throw new Error("Invalid token")
     }
   }
+  isAuthenticated(token) {
+    const isTokenVerified = this.verifyToken(token)
+    if (!isTokenVerified) {
+      throw new Error("Unauthorized")
+    }
+    const user = this.userRepository.getById(isTokenVerified.id)
+    if (!user) {
+      throw new Error("User not found")
+    }
+    return user
+  }
   checkPassword(userInputPassword, encryptedPassword) {
     try {
       const isMatch = bcrypt.compareSync(userInputPassword, encryptedPassword)
@@ -76,6 +87,15 @@ class UserService {
     } catch (error) {
       console.log(`Error in UserService signIn: ${error.message}`)
       throw new Error("Sign-in failed")
+    }
+  }
+
+  isAdmin(userId) {
+    try {
+      return this.userRepository.isAdmin(userId)
+    } catch (error) {
+      console.log(`Error in UserService isAdmin: ${error.message}`)
+      throw new Error("Admin check failed")
     }
   }
 }

@@ -43,8 +43,41 @@ const signIn = async (req, res) => {
     res.status(500).send({ error: "Internal Server Error" })
   }
 }
+
+const isAuthenticated = async (req, res) => {
+  try {
+    const token = req.headers["x-access-token"]
+    const response = await userService.isAuthenticated(token)
+    console.log(response)
+
+    return res.status(200).json({
+      message: "User is authenticated",
+      data: response,
+      success: true,
+    })
+  } catch (error) {
+    console.log(`Error in UserController isAuthenticated: ${error.message}`)
+    res.status(500).send({ error: "Internal Server Error" })
+  }
+}
+
+const isAdmin = async (req, res) => {
+  try {
+    const response = await userService.isAdmin(req.body.userId)
+    return res.status(200).json({
+      message: "User admin status checked",
+      data: response,
+      success: true,
+    })
+  } catch (error) {
+    console.log(`Error in UserController isAdmin: ${error.message}`)
+    res.status(500).send({ error: "Internal Server Error" })
+  }
+}
 module.exports = {
   create,
   getById,
   signIn,
+  isAuthenticated,
+  isAdmin,
 }
